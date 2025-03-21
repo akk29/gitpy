@@ -6,7 +6,7 @@ GitPy
 Python Interface to GitHub's developer API
 
 
-|Code Climate| |License| |Build Status| |Code Coverage|
+|Code Climate| |License| |Code Coverage|
 
 
 .. |Code Climate| image:: https://codeclimate.com/github/babygame0ver/gitpy.png?style=flat-square
