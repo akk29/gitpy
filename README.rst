@@ -46,8 +46,7 @@ Installation
 
 .. code-block:: shell
 
-    git clone https://github.com/babygame0ver/gitpy.git
-    git checkout -b install
+    git clone https://github.com/akk29/gitpy.git
     python3 setup.py install
 
 
@@ -250,4 +249,4 @@ You can do any of these following:
 
 2. How you can do it ? : Fork the repository, Implement new features by creating a seprate branch & sending PR to develop branch , with writting proper unit tests.  
 
-Engineered with ❤️ by `babygame0ver <https://www.github.com/babygame0ver>`_
+Engineered with ❤️ by `akk29 <https://www.github.com/akk29>`_
