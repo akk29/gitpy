@@ -1,21 +1,11 @@
-class API_ENDPOINTS:
-    def __init__(self):
-        self.urls = {
-            "auth_urls": Authentication.urls,
-            "repository_urls": Repository.urls,
-        }
+class AUTHENTICATION_URLS:
+    USER = "users/{username}"
 
-    def get_url(self, module, action, payload):
-        return self.urls[module][action].format(**payload)
+class REPOSITORY_URLS:
+    LIST_REPOS = "user/repos"
+    CREATE_REPO = "user/repos"
+    REPO_URL = "repos/{username}/{repo_name}"
 
 
-class Authentication:
-    urls = {"authentication": "users/{username}"}
-
-
-class Repository:
-    urls = {
-        "all_repos": "user/repos",
-        "create_repo": "user/repos",
-        "repo_url": "repos/{username}/{repo_name}",
-    }
+def generate_url(base_url,payload):
+    return base_url.format(**payload)
