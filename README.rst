@@ -97,7 +97,7 @@ Gitpy works with username & token of a given account. Please obtain a personal a
 
 `Github Personal Token Guide <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line>`_	
 
-1. **Authenticating username & token with Github API.**
+1. **Authentication.**
 
 
 .. code-block:: python2
@@ -227,13 +227,24 @@ Gitpy works with username & token of a given account. Please obtain a personal a
 Development Setup
 =========================================================
 
-1. Running Tests & Development
+1. Running Tests & Development Setup
 
 .. code-block:: shell
 
+    # creating and setting up environment
+    python -m venv .venv
+    .venv\scripts\activate
+
+    # installing dependencies
     pip install -r requirements.txt
-    python scripts/ci/run-tests 
     
+    # running tests
+    python scripts\run-tests 
+    
+    # generate and convert coverage report
+    coverage run -m unittest discover
+    coverage html -d coverage_html
+
 =========================================================
  Support & Contribution
 =========================================================
@@ -247,6 +258,4 @@ You can do any of these following:
 
 1. What can you do ? : Improve code Readability, Maintainability, any implemetation that makes current project better, new ideas for the project.
 
-2. How you can do it ? : Fork the repository, Implement new features by creating a seprate branch & sending PR to develop branch , with writting proper unit tests.  
-
-Engineered with ❤️ by `akk29 <https://www.github.com/akk29>`_
+2. How you can do it ? : Fork the repository, Implement new features by creating a seprate branch & sending PR to master branch , with writting proper unit tests.  
