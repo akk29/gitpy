@@ -28,18 +28,35 @@ Python Interface to GitHub's developer API
 Dependencies
 =========================================================
 
-|python|  |Requests|
+|Python|  |Requests| |Urllib3| |Coverage| |Zipp|
 
-.. |python| image:: https://img.shields.io/badge/Python-3.7.4-blue.svg?style=flat-square
+.. |Python| image:: https://img.shields.io/badge/python-3.12.6-blue.svg?style=flat-square
     :alt: Python version
     :scale: 100%
-    :target: https://www.python.org/downloads/release/python-374/
+    :target: https://www.python.org/downloads/release/python-3126/
     
-.. |Requests| image:: https://img.shields.io/badge/Requests-2.22.0-blue.svg?style=flat-square
+.. |Requests| image:: https://img.shields.io/badge/requests-2.32.3-blue.svg?style=flat-square
     :alt: Requests version
     :scale: 100%
-    :target: (https://pypi.org/project/coverage/
+    :target: https://pypi.org/project/requests/
     
+.. |Urllib3| image:: https://img.shields.io/badge/urllib3-2.3.0-blue.svg?style=flat-square
+    :alt: Urllib3 version
+    :scale: 100%
+    :target: https://pypi.org/project/urllib3/
+
+
+.. |Coverage| image:: https://img.shields.io/badge/coverage-7.2.7-blue.svg?style=flat-square
+    :alt: Coverage version
+    :scale: 100%
+    :target: https://pypi.org/project/coverage/
+
+
+.. |Zipp| image:: https://img.shields.io/badge/zipp-3.15.0-blue.svg?style=flat-square
+    :alt: Zipp version
+    :scale: 100%
+    :target: https://pypi.org/project/zipp/
+
 =========================================================
 Installation
 =========================================================
