@@ -28,18 +28,35 @@ Python Interface to GitHub's developer API
 Dependencies
 =========================================================
 
-|python|  |Requests|
+|Python|  |Requests| |Urllib3| |Coverage| |Zipp|
 
-.. |python| image:: https://img.shields.io/badge/Python-3.7.4-blue.svg?style=flat-square
+.. |Python| image:: https://img.shields.io/badge/python-3.12.6-blue.svg?style=flat-square
     :alt: Python version
     :scale: 100%
-    :target: https://www.python.org/downloads/release/python-374/
+    :target: https://www.python.org/downloads/release/python-3126/
     
-.. |Requests| image:: https://img.shields.io/badge/Requests-2.22.0-blue.svg?style=flat-square
+.. |Requests| image:: https://img.shields.io/badge/requests-2.32.3-blue.svg?style=flat-square
     :alt: Requests version
     :scale: 100%
-    :target: (https://pypi.org/project/coverage/
+    :target: https://pypi.org/project/requests/
     
+.. |Urllib3| image:: https://img.shields.io/badge/urllib3-2.3.0-blue.svg?style=flat-square
+    :alt: Urllib3 version
+    :scale: 100%
+    :target: https://pypi.org/project/urllib3/
+
+
+.. |Coverage| image:: https://img.shields.io/badge/coverage-7.2.7-blue.svg?style=flat-square
+    :alt: Coverage version
+    :scale: 100%
+    :target: https://pypi.org/project/coverage/
+
+
+.. |Zipp| image:: https://img.shields.io/badge/zipp-3.15.0-blue.svg?style=flat-square
+    :alt: Zipp version
+    :scale: 100%
+    :target: https://pypi.org/project/zipp/
+
 =========================================================
 Installation
 =========================================================
@@ -97,7 +114,7 @@ Gitpy works with username & token of a given account. Please obtain a personal a
 
 `Github Personal Token Guide <https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line>`_	
 
-1. **Authenticating username & token with Github API.**
+1. **Authentication.**
 
 
 .. code-block:: python2
@@ -227,13 +244,24 @@ Gitpy works with username & token of a given account. Please obtain a personal a
 Development Setup
 =========================================================
 
-1. Running Tests & Development
+1. Running Tests & Development Setup
 
 .. code-block:: shell
 
+    # creating and setting up environment
+    python -m venv .venv
+    .venv\scripts\activate
+
+    # installing dependencies
     pip install -r requirements.txt
-    python scripts/ci/run-tests 
     
+    # running tests
+    python scripts\run-tests 
+    
+    # generate and convert coverage report
+    coverage run -m unittest discover
+    coverage html -d coverage_html
+
 =========================================================
  Support & Contribution
 =========================================================
@@ -247,6 +275,4 @@ You can do any of these following:
 
 1. What can you do ? : Improve code Readability, Maintainability, any implemetation that makes current project better, new ideas for the project.
 
-2. How you can do it ? : Fork the repository, Implement new features by creating a seprate branch & sending PR to develop branch , with writting proper unit tests.  
-
-Engineered with ❤️ by `akk29 <https://www.github.com/akk29>`_
+2. How you can do it ? : Fork the repository, Implement new features by creating a seprate branch & sending PR to master branch , with writting proper unit tests.  
