@@ -1,5 +1,7 @@
-from gitpy.constants.urls import generate_url, REPOSITORY_URLS
+from gitpy.utils.urls import generate_url, REPOSITORY_URLS
+import requests, logging
 
+logger = logging.getLogger(__name__)
 class Repository:
 
     def __init__(self, authenticated_obj):
@@ -9,7 +11,13 @@ class Repository:
     def list_all_user_repositories(self):
         """List all the repositories of User https://api.github.com/:user/repos"""
         url = generate_url(REPOSITORY_URLS.LIST_REPOS,{})
-        return self.network_service.get(url)
+        logging.info("Started listing all repositories")
+        try:
+            response = self.network_service.get(url)
+            logging.info("Completed listing all repositories")
+            return response
+        except requests.exceptions.RequestException as err:
+            logging.error('Issue with listing all user repo' + repr(err))
 
     def __create_post_data(self, repo_name, access=None):
         """https://developer.github.com/v3/repos/#create"""
@@ -29,7 +37,13 @@ class Repository:
         """Creating repository"""
         payload = self.__create_post_data(repo_name, access)
         url = generate_url(REPOSITORY_URLS.CREATE_REPO,{})
-        return self.network_service.post(url, payload)
+        logging.info("Started creating repositories")
+        try:
+            response = self.network_service.post(url, payload)
+            logging.info("Completed creating repositories")
+            return response
+        except requests.exceptions.RequestException as err:
+            logging.error('Issue with listing all user repositories' + repr(err))
 
     def create_public_repository(self, repo_name):
         return self.create_repository(repo_name, False)
@@ -40,4 +54,10 @@ class Repository:
     def delete_repository(self, repo_name):
         params = {"username": self.gitpy_obj.username, "repo_name": repo_name}
         url = generate_url(REPOSITORY_URLS.REPO_URL,params)
-        return self.network_service.delete(url)
+        logging.info("Started deleting repository")
+        try:
+            response = self.network_service.delete(url)
+            logging.info("Completed deleting repository")
+            return response
+        except requests.exceptions.RequestException as err:
+            logging.error('Issue with deleting repositories' + repr(err))
