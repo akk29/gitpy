@@ -2,7 +2,6 @@ import unittest
 from unittest.mock import patch
 from gitpy.core.auth import GitPy
 
-
 class TestAuth(unittest.TestCase):
 
     def setUp(self):
