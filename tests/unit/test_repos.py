@@ -1,13 +1,17 @@
-import unittest
+import unittest, base64
 from unittest import mock
 from unittest.mock import patch
 from gitpy.core.repos import Repository
+from gitpy.service.utils import DEFAULT_EMAIL
 
 class TestRepository(unittest.TestCase):
 
     def setUp(self):
         self.gitpyObj = mock.Mock()
         self.gitpyObj.network_service = self.gitpyObj.network_service
+        self.gitpyObj.user_details = {
+            "email" : DEFAULT_EMAIL
+        }
         self.repo = Repository(self.gitpyObj)
 
     @patch("gitpy.service.networkService.NetworkService.post")
@@ -34,3 +38,23 @@ class TestRepository(unittest.TestCase):
     @patch("gitpy.service.networkService.NetworkService.get")
     def test_get_file(self, mock_object):
         self.repo.get_file("main.py")
+
+    @patch("gitpy.service.networkService.NetworkService.get")
+    def test_create_file(self,mock_object):
+        self.repo.create_file('main.py','import os','file created')
+
+    @patch("gitpy.service.networkService.NetworkService.update")
+    @patch("gitpy.core.repos.Repository.get_file")
+    def test_update_file(self,mock_object_one,mock_object_two):
+        mock_object_two.json = {
+            "sha" : ""
+        }
+        self.repo.update_file('main.py','import json','updated file')
+
+    @patch("gitpy.service.networkService.NetworkService.delete")
+    @patch("gitpy.core.repos.Repository.get_file")
+    def test_delete_file(self,mock_object_one,mock_object_two):
+        mock_object_two.json = {
+            "sha" : ""
+        }
+        self.repo.delete_file('main.py','updated file')
