@@ -262,6 +262,6 @@ Contributions are always welcome.
 
 You can do any of these following:
 
-1. What can you do ? : Improve code Readability, Maintainability, any implemetation that makes current project better, new ideas for the project.
+Improve code readability, maintainability, any implemetation that makes current project better, suggest new ideas for the project.
 
-2. How you can do it ? : Fork the repository, Implement new features by creating a seprate branch & sending PR to master branch , with writting proper unit tests.  
+To make contributions : Fork the repository, implement new features by creating a seprate branch & sending PR to master branch, with writting proper unit tests.  
