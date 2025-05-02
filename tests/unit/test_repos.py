@@ -1,8 +1,7 @@
 import unittest
 from unittest import mock
 from unittest.mock import patch
-from gitpy.repository.repos import Repository
-
+from gitpy.core.repos import Repository
 
 class TestRepository(unittest.TestCase):
 

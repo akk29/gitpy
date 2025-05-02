@@ -1,0 +1,3 @@
+DEFAULT_EMAIL = "octocat@github.com"
+FILE_CREATED_FOR_RENAME_OPERATION = "created file"
+FILE_DELETED_FOR_RENAME_OPERATION = "deleted file"

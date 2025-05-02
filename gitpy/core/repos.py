@@ -1,7 +1,6 @@
 import base64
 from gitpy.service.urls import generate_url, REPOSITORY_URLS
-
-DEFAULT_EMAIL = "octocat@github.com"
+from gitpy.service.utils import DEFAULT_EMAIL,FILE_CREATED_FOR_RENAME_OPERATION,FILE_DELETED_FOR_RENAME_OPERATION
 
 class Repository:
 
@@ -54,14 +53,14 @@ class Repository:
     def select_branch(self,branch_name):
         self._current_branch = branch_name
 
-    def create_branch(self,repo_name,branch_name):
+    def create_branch(self,branch_name):
+        ''''''
+        repo = self._current_repository
         pass
 
-    def update_branch(self,current_name,new_name):
-        pass
-
-    def select_branch(self,branch_name):
-        pass
+    def rename_branch(self,current_name,new_name):
+        '''https://docs.github.com/en/rest/branches/branches?apiVersion=2022-11-28#rename-a-branch'''
+        pass    
 
     def delete_branch(self,branch_name):
         pass
@@ -129,4 +128,13 @@ class Repository:
             return self.network_service.delete(url,payload)
 
     def rename_file(self,current,_new):
-        pass
+        ''' WARNING: GitHub REST API doesn't support rename file operation
+            Hence to do it we need to create the new file with old content
+            and delete the old file
+            resulting in two commit operation
+        '''
+        file_details = self.get_file(current)
+        if(file_details):
+            content = file_details.json()['content']
+            self.create_file(_new,content,FILE_CREATED_FOR_RENAME_OPERATION)
+            self.delete_file(current,FILE_DELETED_FOR_RENAME_OPERATION)        
