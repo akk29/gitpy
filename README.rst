@@ -28,7 +28,7 @@ Python Interface to GitHub's developer API
 Dependencies
 =========================================================
 
-|Python|  |Requests| |Urllib3| |Coverage| |Zipp|
+|Python|  |Requests| |Coverage| 
 
 .. |Python| image:: https://img.shields.io/badge/python-3.12.6-blue.svg?style=flat-square
     :alt: Python version
@@ -40,22 +40,11 @@ Dependencies
     :scale: 100%
     :target: https://pypi.org/project/requests/
     
-.. |Urllib3| image:: https://img.shields.io/badge/urllib3-2.3.0-blue.svg?style=flat-square
-    :alt: Urllib3 version
-    :scale: 100%
-    :target: https://pypi.org/project/urllib3/
-
 
 .. |Coverage| image:: https://img.shields.io/badge/coverage-7.2.7-blue.svg?style=flat-square
     :alt: Coverage version
     :scale: 100%
     :target: https://pypi.org/project/coverage/
-
-
-.. |Zipp| image:: https://img.shields.io/badge/zipp-3.15.0-blue.svg?style=flat-square
-    :alt: Zipp version
-    :scale: 100%
-    :target: https://pypi.org/project/zipp/
 
 =========================================================
 Installation
@@ -66,9 +55,8 @@ Installation
     git clone https://github.com/akk29/gitpy.git
     python3 setup.py install
 
-
 =========================================================
-Introduction & Features
+Features
 =========================================================
 
 * GitPy provide response based object for the GitHub Developer's API with the help of methods.
@@ -250,7 +238,8 @@ Development Setup
 
     # creating and setting up environment
     python -m venv .venv
-    .venv\scripts\activate
+    .venv\scripts\activate # windows
+    .venv/bin/activate
 
     # installing dependencies
     pip install -r requirements.txt
