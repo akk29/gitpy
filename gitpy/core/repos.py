@@ -12,7 +12,7 @@ class Repository:
         self._current_repository = None
         self._current_branch = None
 
-    def list_all_user_repositories(self):
+    def list_repositories(self):
         """https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-organization-repositories"""
         url = generate_url(REPOSITORY_URLS.LIST_REPOS,{})
         return self.network_service.get(url)
@@ -37,9 +37,11 @@ class Repository:
         return self.network_service.post(url, payload)
 
     def create_public_repository(self, repo_name):
+        """https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-an-organization-repository"""
         return self.create_repository(repo_name, False)
 
     def create_private_repository(self, repo_name):
+        """https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-an-organization-repository"""
         return self.create_repository(repo_name, True)
 
     def delete_repository(self, repo_name):
@@ -50,28 +52,6 @@ class Repository:
     def select_repository(self,repo_name):
         self._current_repository = repo_name
 
-    def select_branch(self,branch_name):
-        self._current_branch = branch_name
-
-    def create_branch(self,branch_name):
-        ''''''
-        repo = self._current_repository
-        pass
-
-    def rename_branch(self,current_name,new_name):
-        '''https://docs.github.com/en/rest/branches/branches?apiVersion=2022-11-28#rename-a-branch'''
-        pass    
-
-    def delete_branch(self,branch_name):
-        pass
-
-    # def decorator(func):  
-    #     def wrapper(self,*args,**kwargs):
-    #         print("Before calling the function.")
-    #         func(self,*args,**kwargs)
-    #         print("After calling the function.")
-    #     return wrapper
-    
     def create_file(self,abs_path,content,msg):
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents'''
         params = {"owner" : self.gitpy_obj.username, "repo" : self._current_repository, "path" : abs_path}
