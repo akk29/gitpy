@@ -7,33 +7,30 @@ class TestRepository(unittest.TestCase):
 
     def setUp(self):
         self.gitpyObj = mock.Mock()
-        self.gitpyObj.network_service = ""
+        self.gitpyObj.network_service = self.gitpyObj.network_service
         self.repo = Repository(self.gitpyObj)
 
-    @patch("gitpy.core.repos.Repository.create_repository")
-    def test_create_repository_success(self, mock_object):
-        mock_object.return_value.status_code = 201
-        payload = {"username": "username", "repo_name": "reponame"}
-        response = self.repo.create_repository(payload)
-        self.assertEqual(response.status_code, 201)
+    @patch("gitpy.service.networkService.NetworkService.post")
+    def test_create_repository(self, mock_object):
+        self.repo.create_repository("public_repo",False)
+        self.repo.create_repository("private_repo",True)
 
-    @patch("gitpy.core.repos.Repository.create_repository")
-    def test_duplicate_repository_exists(self, mock_object):
-        mock_object.return_value.status_code = 422
-        payload = {"username": "username", "repo_name": "alreadypresentrepositoryname"}
-        response = self.repo.create_repository(payload)
-        self.assertEqual(response.status_code, 422)
+    @patch("gitpy.service.networkService.NetworkService.post")
+    def test_create_public_repository(self, mock_object):
+        self.repo.create_public_repository("public_repo")
 
-    @patch("gitpy.core.repos.Repository.delete_repository")
-    def test_delete_repository_success(self, mock_object):
-        mock_object.return_value.status_code = 204
-        response = self.repo.delete_repository("repo-name-that-exists-in-user-account")
-        self.assertEqual(response.status_code, 204)
+    @patch("gitpy.service.networkService.NetworkService.post")
+    def test_create_private_repository(self, mock_object):
+        self.repo.create_private_repository("private_repo")
 
-    @patch("gitpy.core.repos.Repository.delete_repository")
-    def test_delete_repository_failure(self, mock_object):
-        mock_object.return_value.status_code = 404
-        response = self.repo.delete_repository(
-            "repo-name-that-is-already-deleted-from-user-account"
-        )
-        self.assertEqual(response.status_code, 404)
+    @patch("gitpy.service.networkService.NetworkService.get")
+    def test_list_repository(self, mock_object):
+        self.repo.list_repositories()
+
+    @patch("gitpy.service.networkService.NetworkService.delete")
+    def test_delete_repository(self, mock_object):
+        self.repo.delete_repository("repo-name-that-exists-in-user-account")
+
+    @patch("gitpy.service.networkService.NetworkService.get")
+    def test_get_file(self, mock_object):
+        self.repo.get_file("main.py")
