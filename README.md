@@ -29,6 +29,29 @@ python setup.py install
 
 * To write your own application interacting with GitHub API you need to store the end-point urls & mock them using request library. GitPy takes care it for you.
 
+### Development Setup
+
+1. Running Tests & Development Setup
+
+```python
+# creating and setting up environment
+python -m venv .venv
+.venv\scripts\activate # windows
+.venv/bin/activate
+
+# installing dependencies
+pip install -r requirements.txt
+
+# running tests
+python -m unittest discover
+python -m unittest tests.unit.test_repos # run specific module
+python -m unittest tests.unit.test_repos.test_create_private_repository # run specific function
+
+# generate and convert coverage report
+coverage run -m unittest discover
+coverage html -d coverage_html
+```
+
 ## Getting Started
 
 Gitpy works with username & token of a given account. Please obtain a personal access token with all permissions & save it somewhere securely. Refer  to
@@ -335,28 +358,6 @@ if __name__ == '__main__':
     gitpy_object = basic_authentication()
     delete_file(gitpy_object)
 
-```
-
-
-### Development Setup
-
-1. Running Tests & Development Setup
-
-```python
-# creating and setting up environment
-python -m venv .venv
-.venv\scripts\activate # windows
-.venv/bin/activate
-
-# installing dependencies
-pip install -r requirements.txt
-
-# running tests
-python scripts\run-tests 
-
-# generate and convert coverage report
-coverage run -m unittest discover
-coverage html -d coverage_html
 ```
 
  ## Support & Contribution
