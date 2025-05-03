@@ -1,11 +1,11 @@
-import unittest
+import unittest, requests
 from unittest.mock import patch
 from gitpy.core.auth import GitPy
 
 class TestAuth(unittest.TestCase):
 
     def setUp(self):
-        self.gitpy_obj = g = GitPy("correctusername", "correcttoken")
+        self.gitpy_obj = GitPy("correctusername", "correcttoken")
 
     @patch("gitpy.service.networkService.NetworkService.get")
     def test_authentication_success(self, mock_object):

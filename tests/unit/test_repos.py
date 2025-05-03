@@ -35,6 +35,9 @@ class TestRepository(unittest.TestCase):
     def test_delete_repository(self, mock_object):
         self.repo.delete_repository("repo-name-that-exists-in-user-account")
 
+    def test_select_repository(self):
+        self.repo.select_repository('repo-selected')
+
     @patch("gitpy.service.networkService.NetworkService.get")
     def test_get_file(self, mock_object):
         self.repo.get_file("main.py")
@@ -50,6 +53,13 @@ class TestRepository(unittest.TestCase):
             "sha" : ""
         }
         self.repo.update_file('main.py','import json','updated file')
+
+    @patch("gitpy.service.networkService.NetworkService.delete")
+    @patch("gitpy.core.repos.Repository.get_file")
+    @patch("gitpy.core.repos.Repository.create_file")
+    @patch("gitpy.core.repos.Repository.delete_file")
+    def test_rename_file(self,mock_object_one,mock_object_two,mock_object_three,mock_object_four):        
+        self.repo.rename_file('main.py','updated file')
 
     @patch("gitpy.service.networkService.NetworkService.delete")
     @patch("gitpy.core.repos.Repository.get_file")
