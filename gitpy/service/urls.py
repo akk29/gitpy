@@ -4,12 +4,14 @@ class BASE_URL:
 CURRENT_URL = BASE_URL.API
 
 class AUTHENTICATION_URLS:
-    USER = "users/{username}"
+    USER = 'user'
 
 class REPOSITORY_URLS:
+    
     LIST_REPOS = "user/repos"
     CREATE_REPO = "user/repos"
     REPO_URL = "repos/{username}/{repo_name}"
+
     CREATE_FILE = "repos/{owner}/{repo}/contents/{path}"
     GET_FILE = "repos/{owner}/{repo}/contents/{path}"
     UDPATE_FILE = "repos/{owner}/{repo}/contents/{path}"

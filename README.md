@@ -91,9 +91,9 @@ def basic_authentication():
     headers = response.headers
     if(headers['status'] == '200 OK' and headers['X-RateLimit-Limit'] === '5000'):
         print('Authentication Successfull')
-    if(headers['status] == '401 Unauthorized'):
+    if(headers['status'] == '401 Unauthorized'):
         print('Wrong Token provided')
-    if(headers['status] == '404 Not Found'):
+    if(headers['status'] == '404 Not Found'):
         print('Username not found')
     
 if __name__ == '__main__':
