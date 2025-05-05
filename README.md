@@ -8,7 +8,7 @@ Python Interface to GitHub's developer API
 
 ## Dependencies
 
-[![name](https://img.shields.io/badge/python-3.12.6-blue.svg?style=flat-square)](https://www.python.org/downloads/release/python-3126/)
+[![name](https://img.shields.io/badge/python-3.13.3-blue.svg?style=flat-square)](https://www.python.org/downloads/release/python-3133/)
 [![name](https://img.shields.io/badge/requests-2.32.3-blue.svg?style=flat-square)](https://pypi.org/project/requests/)
 [![name](https://img.shields.io/badge/coverage-7.2.7-blue.svg?style=flat-square)](https://pypi.org/project/coverage/)
 
