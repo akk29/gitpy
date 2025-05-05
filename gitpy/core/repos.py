@@ -34,17 +34,18 @@ class Repository:
         """https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-an-organization-repository"""
         payload = self.__create_post_data(repo_name, access)
         url = generate_url(REPOSITORY_URLS.CREATE_REPO,{})
-        return self.network_service.post(url, payload)
+        response = self.network_service.post(url, payload)
+        self.select_repository(repo_name)
+        return response
 
     def create_public_repository(self, repo_name):
-        """https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-an-organization-repository"""
         return self.create_repository(repo_name, False)
 
     def create_private_repository(self, repo_name):
-        """https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-an-organization-repository"""
         return self.create_repository(repo_name, True)
 
     def delete_repository(self, repo_name):
+        '''https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#delete-a-repository'''
         params = {"username": self.gitpy_obj.username, "repo_name": repo_name}
         url = generate_url(REPOSITORY_URLS.REPO_URL,params)
         return self.network_service.delete(url)

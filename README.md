@@ -64,6 +64,8 @@ Gitpy provides modules to interact with GitHub Developer API. These modules cont
 
 Funtions are defined as per the operations.
 
+Use exception handling provided by library in your code. See [Authentication](#authentication) example for more details
+
 ### Table of Contents
 
 
@@ -81,24 +83,41 @@ Funtions are defined as per the operations.
 #### Authentication
 ```python
 from gitpy.core.auth import GitPy
+from gitpy.exceptions import UnauthorizedError, ForbiddenError, ValidationError, ResourceNotFoundError
 
 def basic_authentication():
     # bad practice use env file or environment variables to secure your credentials.
     username = 'myusername'
     token = 'myrandomtoken'
     g = GitPy(username,token)    
-    response = g.authenticate()
-    headers = response.headers
-    if(headers['status'] == '200 OK' and headers['X-RateLimit-Limit'] === '5000'):
-        print('Authentication Successfull')
-    if(headers['status] == '401 Unauthorized'):
-        print('Wrong Token provided')
-    if(headers['status] == '404 Not Found'):
-        print('Username not found')
+
+    # custom error handling for all errors from github API
+    try:
+        result = g.authenticate()
+        print(result.json())            
+    except UnauthorizedError:
+        print('UnauthorizedError') # putting wrong token value
+        # token = 'wrong token'
+        # output for UnauthorizedError       
+    except ForbiddenError:
+        print('ForbiddenError')
+    except ResourceNotFoundError:
+        print('ResourceNotFoundError')
+    except ValidationError:
+        print('ValidationError')
+    except Exception as err:
+        print('error occured',err)
     
 if __name__ == '__main__':
     basic_authentication()
 
+```
+
+```shell
+# output for UnauthorizedError
+
+2025-05-05 17:20:10,865 - gitpy.service.loggerService - ERROR --- gitpy\service\networkService.py , get(), line no : 31 , raised UnauthorizedError() ----- api_response : {'message': 'Bad credentials', 'documentation_url': 'https://docs.github.com/rest', 'status': '401'}
+UnauthorizedError
 ```
 
 #### Repository
@@ -126,18 +145,18 @@ def basic_authentication():
 def create_repository(gitpy_object):
     repo = Repository(gitpy_object)
     response = repo.create_public_repository('my-public-repo')
-    print(response.status_code) # 201 -> Created , 422 -> Already Present
+    print(response.json())
 
     ''' or directy accessing underlying function '''
     response = repo.create_repository('my-public-repo-2',False)  # False for Public
-    print(response.status_code) # 201 -> Created , 422 -> Already Present
+    print(response.json())
 
     response = repo.create_private_repository('my-private-repo')
-    print(response.status_code) # 201 -> Created , 422 -> Already Present
+    print(response.json())
 
     ''' or directy accessing underlying function '''
     response = repo.create_repository('my-private-repo-2',True)  # True for Private
-    print(response.status_code) # 201 -> Created , 422 -> Already Present
+    print(response.json())
 
 if __name__ == '__main__':
     gitpy_object = basic_authentication()
