@@ -1,7 +1,7 @@
 import logging
 import threading
 
-LOGGING_FORMAT = '%(levelname)s --- %(message)s'
+LOGGING_FORMAT = '%(asctime)s - %(name)s - %(levelname)s --- %(message)s'
 
 class Logger:
 

@@ -1,6 +1,4 @@
-import requests
 from collections import defaultdict
-from gitpy.exceptions import ERR_MSG,UnauthorizedError, ResourceNotFoundError
 from gitpy.service.networkService import NetworkService
 from gitpy.service.urls import AUTHENTICATION_URLS , generate_url
 
