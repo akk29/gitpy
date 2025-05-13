@@ -39,9 +39,11 @@ class NetworkService:
         except Exception as err:
             self.request_handler(err)
 
-    def delete(self, url,payload):
+    def delete(self, url,payload=None):
         try:
-            response = self.session.delete(url, data=json.dumps(payload))
+            if(payload):
+                response = self.session.delete(url, data=json.dumps(payload))
+            response = self.session.delete(url)
             if(response.status_code >= codes.bad_request):
                 raise Exception(response)
             return response

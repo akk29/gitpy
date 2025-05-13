@@ -48,7 +48,7 @@ class Repository:
         '''https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#delete-a-repository'''
         params = {"username": self.gitpy_obj.username, "repo_name": repo_name}
         url = generate_url(REPOSITORY_URLS.REPO_URL,params)
-        return self.network_service.delete(url)
+        return self.network_service.delete(url,None)
     
     def select_repository(self,repo_name):
         self._current_repository = repo_name
