@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch
+from requests.status_codes import codes
 from gitpy.core.auth import GitPy
 from gitpy.exceptions import UnauthorizedError
 class TestAuth(unittest.TestCase):

@@ -43,7 +43,8 @@ class NetworkService:
         try:
             if(payload):
                 response = self.session.delete(url, data=json.dumps(payload))
-            response = self.session.delete(url)
+            else:
+                response = self.session.delete(url)
             if(response.status_code >= codes.bad_request):
                 raise Exception(response)
             return response
