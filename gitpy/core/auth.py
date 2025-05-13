@@ -1,7 +1,7 @@
 from collections import defaultdict
 from gitpy.service.networkService import NetworkService
 from gitpy.service.urls import AUTHENTICATION_URLS , generate_url
-
+from gitpy.service.utils import FILLER as F
 class GitPy:
 
     def __init__(self, username=None, token=None):
@@ -9,10 +9,10 @@ class GitPy:
         self.token = token
         self.network_service = NetworkService(
             headers={
-                "Authorization": "Bearer {}".format(self.token), 
-                "X-GitHub-Api-Version" : "2022-11-28", 
-                "Accept": "application/vnd.github+json", 
-                "User-Agent" : "Awesome-Octocat-App" }
+                F.AUTHORIZATION : "Bearer {}".format(self.token), 
+                F.X_GITHUB_API_VERSION : F.GITHUB_CURRENT_VERSION, 
+                F.ACCEPT: F.APPLICATION_JSON, 
+                F.USER_AGENT : F.AWESOME_OCTOCAT_APP }
         )
         self.user_details = None
 

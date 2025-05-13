@@ -1,73 +1,120 @@
-import unittest, base64
-from unittest import mock
+import unittest
 from unittest.mock import patch
+from requests.status_codes import codes
+from gitpy.core.auth import GitPy
 from gitpy.core.repos import Repository
-from gitpy.service.utils import DEFAULT_EMAIL
+from gitpy.exceptions import UnauthorizedError
+from gitpy.service.utils import FILLER as F
 
 class TestRepository(unittest.TestCase):
 
     def setUp(self):
-        self.gitpyObj = mock.Mock()
+        self.gitpyObj = GitPy("correctusername", "correcttoken")
         self.gitpyObj.network_service = self.gitpyObj.network_service
         self.gitpyObj.user_details = {
-            "email" : DEFAULT_EMAIL
+            "email" : F.DEFAULT_EMAIL
         }
         self.repo = Repository(self.gitpyObj)
     
     @patch("requests.Session.post")
-    def test_create_repository(self, mock_object):
-        mock_object.return_value.status_code = 201
+    def test_create_repository_success(self, mock_post):
+        mock_post.return_value.status_code = codes.created
         self.repo.create_repository("public_repo",False)
-        self.repo.create_repository("private_repo",True)
+        response = self.repo.create_repository("private_repo",True)
+        self.assertEqual(response.status_code,codes.created)
+
+    @patch("requests.Session.post")
+    def test_create_repository_failed(self, mock_post):
+        mock_post.return_value.status_code = codes.unauthorized
+        mock_post.return_value.json.return_value = {}
+        with self.assertRaises(UnauthorizedError):
+            self.repo.create_repository("public_repo",False)
     
     @patch("requests.Session.post")
-    def test_create_public_repository(self, mock_object):
-        mock_object.return_value.status_code = 201
-        self.repo.create_public_repository("public_repo")
+    def test_create_public_repository(self, mock_post):
+        mock_post.return_value.status_code = codes.created
+        response = self.repo.create_public_repository("public_repo")
+        self.assertEqual(response.status_code,codes.created)
    
     @patch("requests.Session.post")
-    def test_create_private_repository(self, mock_object):
-        mock_object.return_value.status_code = 201
-        self.repo.create_private_repository("private_repo")
+    def test_create_private_repository(self, mock_post):
+        mock_post.return_value.status_code = codes.created
+        response = self.repo.create_private_repository("private_repo")
+        self.assertEqual(response.status_code,codes.created)
 
     @patch("requests.Session.get")
-    def test_list_repository(self, mock_object):
-        self.repo.list_repositories()
+    def test_list_repository(self, mock_get):
+        mock_get.return_value.status_code = codes.ok
+        response = self.repo.list_repositories()
+        self.assertEqual(response.status_code,codes.ok)
 
     @patch("requests.Session.delete")
-    def test_delete_repository(self, mock_object):
-        self.repo.delete_repository("repo-name-that-exists-in-user-account")
+    def test_delete_repository_success(self, mock_delete):
+        mock_delete.return_value.status_code = codes.ok
+        response = self.repo.delete_repository("repo-name-that-exists-in-user-account")
+        self.assertEqual(response.status_code,codes.ok)
+
+    @patch("requests.Session.delete")
+    def test_delete_repository_failure(self, mock_delete):
+        mock_delete.return_value.status_code = codes.unauthorized
+        with self.assertRaises(UnauthorizedError):
+            self.repo.delete_repository("repo-name-that-exists-in-user-account")
 
     def test_select_repository(self):
         self.repo.select_repository('repo-selected')
 
     @patch("requests.Session.get")
-    def test_get_file(self, mock_object):
-        self.repo.get_file("main.py")
+    def test_get_file(self, mock_get):
+        mock_get.return_value.status_code = codes.ok
+        response = self.repo.get_file("main.py")
+        self.assertEqual(response.status_code,codes.ok)
+
+    @patch("requests.Session.put")
+    def test_create_file_success(self,mock_put):
+        mock_put.return_value.status_code = codes.created
+        response = self.repo.create_file('main.py','import os','file created')
+        self.assertEqual(response.status_code,codes.created)
+
+    @patch("requests.Session.put")
+    def test_create_file_failed(self,mock_put):
+        mock_put.return_value.status_code = codes.unauthorized
+        with self.assertRaises(UnauthorizedError):
+            self.repo.create_file('main.py','import os','file created')
 
     @patch("requests.Session.get")
-    def test_create_file(self,mock_object):
-        self.repo.create_file('main.py','import os','file created')
+    @patch("requests.Session.put")
+    def test_update_file(self,mock_object_get,mock_object_put):
+        mock_object_get.return_value.status_code = codes.ok
+        mock_object_put.return_value.json.return_value = {
+            "sha" : ""
+        }
+        mock_object_put.return_value.status_code = codes.ok
+        response = self.repo.update_file('main.py','import json','updated file')
+        self.assertEqual(response.status_code,codes.ok)
+
+    @patch("requests.Session.delete")
+    @patch("gitpy.core.repos.Repository.get_file")
+    @patch("json.dumps")
+    def test_delete_file(self,mock_object_delete,mock_object_get_file,mock_object_json):
+        mock_object_delete.return_value.status_code = codes.ok
+        mock_object_get_file.return_value.status_code = codes.ok
+        mock_object_get_file.json = {
+            "sha" : ""
+        }
+        mock_object_json.return_value.status_code = codes.ok
+        response = self.repo.delete_file('main.py','updated file')
+        self.assertEqual(response.status_code,codes.ok)
 
     @patch("requests.Session.put")
     @patch("gitpy.core.repos.Repository.get_file")
-    def test_update_file(self,mock_object_one,mock_object_two):
-        mock_object_two.json = {
-            "sha" : ""
-        }
-        self.repo.update_file('main.py','import json','updated file')
-
-    @patch("requests.Session.delete")
-    @patch("gitpy.core.repos.Repository.get_file")
     @patch("gitpy.core.repos.Repository.create_file")
-    @patch("gitpy.core.repos.Repository.delete_file")
-    def test_rename_file(self,mock_object_one,mock_object_two,mock_object_three,mock_object_four):        
-        self.repo.rename_file('main.py','updated file')
-
-    @patch("requests.Session.delete")
-    @patch("gitpy.core.repos.Repository.get_file")
-    def test_delete_file(self,mock_object_one,mock_object_two):
-        mock_object_two.json = {
-            "sha" : ""
+    def test_rename_file(self,mock_object_put,mock_object_get_file,mock_object_create_file):      
+        mock_object_put.return_value.status_code = codes.ok
+        mock_object_get_file.return_value.json = {
+            "sha" : "",
+            "content" : ""
         }
-        self.repo.delete_file('main.py','updated file')
+        mock_object_get_file.return_value.status_code = codes.ok
+        mock_object_create_file.return_value.status_code = codes.ok
+        mock_object_get_file.return_value = ""
+        self.repo.rename_file('main.py','updated file')

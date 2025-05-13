@@ -1,6 +1,6 @@
 import base64
 from gitpy.service.urls import generate_url, REPOSITORY_URLS
-from gitpy.service.utils import DEFAULT_EMAIL,FILE_CREATED_FOR_RENAME_OPERATION,FILE_DELETED_FOR_RENAME_OPERATION
+from gitpy.service.utils import FILLER as F
 
 class Repository:
 
@@ -19,15 +19,15 @@ class Repository:
 
     def __create_post_data(self, repo_name, access=None):
         repo_meta_data = {
-            "name": "{}".format(repo_name),
-            "description": "",
-            "homepage": "",
-            "has_issues": True,
-            "has_projects": True,
-            "has_wiki": True,
+            F.NAME: "{}".format(repo_name),
+            F.DESCRIPTION: "",
+            F.HOME_PAGE: "",
+            F.HAS_ISSUES: True,
+            F.HAS_PROJECTS: True,
+            F.HAS_WIKI: True,
         }
         if access:  # for private repo
-            repo_meta_data["private"] = True
+            repo_meta_data[F.PRIVATE] = True
         return repo_meta_data
 
     def create_repository(self, repo_name, access):
@@ -46,30 +46,30 @@ class Repository:
 
     def delete_repository(self, repo_name):
         '''https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#delete-a-repository'''
-        params = {"username": self.gitpy_obj.username, "repo_name": repo_name}
+        params = {F.USERNAME: self.gitpy_obj.username, F.REPO_NAME: repo_name}
         url = generate_url(REPOSITORY_URLS.REPO_URL,params)
-        return self.network_service.delete(url)
+        return self.network_service.delete(url,None)
     
     def select_repository(self,repo_name):
         self._current_repository = repo_name
 
     def create_file(self,abs_path,content,msg):
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents'''
-        params = {"owner" : self.gitpy_obj.username, "repo" : self._current_repository, "path" : abs_path}
+        params = {F.OWNER : self.gitpy_obj.username, F.REPO : self._current_repository, F.PATH : abs_path}
         url = generate_url(REPOSITORY_URLS.CREATE_FILE,params)
         payload = {
-            "message" : msg,
-            "committer" : {
-                "name" : self.gitpy_obj.username,
-                "email" : DEFAULT_EMAIL if not self.gitpy_obj.user_details['email'] else self.gitpy_obj.user_details['email']
+            F.MESSAGE: msg,
+            F.COMMITTER : {
+                F.NAME : self.gitpy_obj.username,
+                F.EMAIL : F.DEFAULT_EMAIL if not self.gitpy_obj.user_details[F.EMAIL] else self.gitpy_obj.user_details[F.EMAIL]
             },
-            "content" : base64.b64encode(bytes(content,"utf-8")).decode('utf-8')
+            F.CONTENT : base64.b64encode(bytes(content,F.UTF8)).decode(F.UTF8)
         }
         return self.network_service.update(url,payload)
 
     def get_file(self,abs_path):
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-repository-content'''
-        params = {"owner" : self.gitpy_obj.username, "repo" : self._current_repository, "path" : abs_path}
+        params = {F.OWNER: self.gitpy_obj.username, F.REPO : self._current_repository, F.PATH : abs_path}
         url = generate_url(REPOSITORY_URLS.GET_FILE,params)
         return self.network_service.get(url)
 
@@ -77,17 +77,17 @@ class Repository:
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents'''
         file_details = self.get_file(abs_path)
         if(file_details):
-            _sha = file_details.json()['sha'] 
+            _sha = file_details.json()[F.SHA] 
             payload = {
-                "message" : msg,
-                "committer" : {
-                    "name" : self.gitpy_obj.username,
-                    "email" : DEFAULT_EMAIL if not self.gitpy_obj.user_details['email'] else self.gitpy_obj.user_details['email']
+                F.MESSAGE : msg,
+                F.COMMITTER : {
+                    F.NAME : self.gitpy_obj.username,
+                    F.EMAIL : F.DEFAULT_EMAIL if not self.gitpy_obj.user_details[F.EMAIL] else self.gitpy_obj.user_details[F.EMAIL]
                 },
-                "sha": _sha,
-                "content" : base64.b64encode(bytes(content,"utf-8")).decode('utf-8')
+                F.SHA: _sha,
+                F.CONTENT : base64.b64encode(bytes(content,F.UTF8)).decode(F.UTF8)
             }
-            params = {"owner" : self.gitpy_obj.username, "repo" : self._current_repository, "path" : abs_path}
+            params = {F.OWNER: self.gitpy_obj.username, F.REPO : self._current_repository, F.PATH : abs_path}
             url = generate_url(REPOSITORY_URLS.UDPATE_FILE,params)
             return self.network_service.update(url,payload)
 
@@ -95,16 +95,16 @@ class Repository:
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#delete-a-file'''
         file_details = self.get_file(abs_path)
         if(file_details):
-            _sha = file_details.json()['sha'] 
+            _sha = file_details.json()[F.SHA] 
             payload = {
-                "message" : msg,
-                "committer" : {
-                    "name" : self.gitpy_obj.username,
-                    "email" : DEFAULT_EMAIL if not self.gitpy_obj.user_details['email'] else self.gitpy_obj.user_details['email']
+                F.MESSAGE : msg,
+                F.COMMITTER : {
+                    F.NAME : self.gitpy_obj.username,
+                    F.EMAIL : F.DEFAULT_EMAIL if not self.gitpy_obj.user_details[F.EMAIL] else self.gitpy_obj.user_details[F.EMAIL]
                 },
-                "sha": _sha
+                F.SHA: _sha
             }
-            params = {"owner" : self.gitpy_obj.username, "repo" : self._current_repository, "path" : abs_path}
+            params = {F.OWNER : self.gitpy_obj.username, F.REPO : self._current_repository, F.PATH : abs_path}
             url = generate_url(REPOSITORY_URLS.DELETE_FILE,params)
             return self.network_service.delete(url,payload)
 
@@ -116,6 +116,6 @@ class Repository:
         '''
         file_details = self.get_file(current)
         if(file_details):
-            content = file_details.json()['content']
-            self.create_file(_new,content,FILE_CREATED_FOR_RENAME_OPERATION)
-            self.delete_file(current,FILE_DELETED_FOR_RENAME_OPERATION)        
+            content = file_details.json()[F.CONTENT]
+            self.create_file(_new,content,F.FILE_CREATED_FOR_RENAME_OPERATION)
+            self.delete_file(current,F.FILE_DELETED_FOR_RENAME_OPERATION)        
