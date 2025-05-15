@@ -27,3 +27,5 @@ class FILLER:
     USER_AGENT = "user-agent"
     APPLICATION_JSON = "application/vnd.github+json"
     AWESOME_OCTOCAT_APP = "Awesome-Octocat-App"
+    JSON = "json"
+    STATUS_CODE = "status_code"

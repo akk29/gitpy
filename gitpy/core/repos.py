@@ -1,6 +1,16 @@
 import base64
+from requests.status_codes import codes
+from gitpy.exceptions import UnauthorizedError
 from gitpy.service.urls import generate_url, REPOSITORY_URLS
 from gitpy.service.utils import FILLER as F
+
+def login_required(func):
+    def wrapper(self,*args,**kwargs):
+        if(self.gitpy_obj.get_user_details() is None):            
+            raise UnauthorizedError(response={F.STATUS_CODE : codes.unauthorized, F.JSON : {}},code=codes.unauthorized)
+        else:
+            return func(self,*args,**kwargs)
+    return wrapper
 
 class Repository:
 
@@ -12,6 +22,7 @@ class Repository:
         self._current_repository = None
         self._current_branch = None
 
+    @login_required
     def list_repositories(self):
         """https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-organization-repositories"""
         url = generate_url(REPOSITORY_URLS.LIST_REPOS,{})
@@ -30,6 +41,7 @@ class Repository:
             repo_meta_data[F.PRIVATE] = True
         return repo_meta_data
 
+    @login_required
     def create_repository(self, repo_name, access):
         """https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-an-organization-repository"""
         payload = self.__create_post_data(repo_name, access)
@@ -44,6 +56,7 @@ class Repository:
     def create_private_repository(self, repo_name):
         return self.create_repository(repo_name, True)
 
+    @login_required
     def delete_repository(self, repo_name):
         '''https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#delete-a-repository'''
         params = {F.USERNAME: self.gitpy_obj.username, F.REPO_NAME: repo_name}
@@ -53,6 +66,7 @@ class Repository:
     def select_repository(self,repo_name):
         self._current_repository = repo_name
 
+    @login_required
     def create_file(self,abs_path,content,msg):
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents'''
         params = {F.OWNER : self.gitpy_obj.username, F.REPO : self._current_repository, F.PATH : abs_path}
@@ -67,12 +81,14 @@ class Repository:
         }
         return self.network_service.update(url,payload)
 
+    @login_required
     def get_file(self,abs_path):
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-repository-content'''
         params = {F.OWNER: self.gitpy_obj.username, F.REPO : self._current_repository, F.PATH : abs_path}
         url = generate_url(REPOSITORY_URLS.GET_FILE,params)
         return self.network_service.get(url)
 
+    @login_required
     def update_file(self,abs_path,content,msg):
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents'''
         file_details = self.get_file(abs_path)
@@ -91,6 +107,7 @@ class Repository:
             url = generate_url(REPOSITORY_URLS.UDPATE_FILE,params)
             return self.network_service.update(url,payload)
 
+    @login_required
     def delete_file(self,abs_path,msg):
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#delete-a-file'''
         file_details = self.get_file(abs_path)
@@ -108,6 +125,7 @@ class Repository:
             url = generate_url(REPOSITORY_URLS.DELETE_FILE,params)
             return self.network_service.delete(url,payload)
 
+    @login_required
     def rename_file(self,current,_new):
         ''' WARNING: GitHub REST API doesn't support rename file operation
             Hence to do it we need to create the new file with old content

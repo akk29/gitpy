@@ -22,3 +22,6 @@ class GitPy:
         response = self.network_service.get(url)
         self.user_details = defaultdict(lambda : None,response.json())
         return response
+    
+    def get_user_details(self):
+        return self.user_details
