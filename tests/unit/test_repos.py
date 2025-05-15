@@ -118,3 +118,10 @@ class TestRepository(unittest.TestCase):
         mock_object_create_file.return_value.status_code = codes.ok
         mock_object_get_file.return_value = ""
         self.repo.rename_file('main.py','updated file')
+
+    @patch("requests.Session.get")
+    def test_login_required_failed(self, mock_get):
+        self.gitpyObj.user_details = None
+        mock_get.return_value.status_code = codes.ok
+        with self.assertRaises(UnauthorizedError):
+            self.repo.list_repositories()
