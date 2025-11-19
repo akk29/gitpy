@@ -5,6 +5,6 @@ setup(
     name="gitpy",
     version="1.0",
     packages=find_packages(),
-    license=open("LICENSE.txt").read(),
-    long_description=open("README.rst",encoding="UTF-8").read(),
+    license=open("LICENSE").read(),
+    long_description=open("README.md",encoding="UTF-8").read(),
 )
