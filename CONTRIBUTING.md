@@ -1,6 +1,27 @@
+# Development Setup
+
+```python
+# creating and setting up environment
+python -m venv .venv
+.venv\scripts\activate # windows
+.venv/bin/activate
+
+# installing dependencies
+pip install -r requirements.txt
+
+# running tests
+python -m unittest discover
+python -m unittest tests.unit.test_repos # run specific module
+python -m unittest tests.unit.test_repos.test_create_private_repository # run specific function
+
+# generate and convert coverage report
+coverage run -m unittest discover
+coverage html -d coverage_html
+```
+
 # Support & Contribution
 
-If you are facing issues related to bugs, code documentation, development setup or any other general issue.
+If you are facing issues related to bugs, code [documentation]((https://github.com/akk29/gitpy/wiki)), development setup or any other general issue.
 Feel free to open an issue to reproduce the bug by providing sample code with proper label.   
 
 Contributions are always welcome. You can do any of these following:
