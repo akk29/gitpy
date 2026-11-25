@@ -15,17 +15,56 @@ and returns `requests.Response` objects for application-specific logic.
 ```shell
 git clone https://github.com/akk29/gitpy.git
 cd gitpy
-python -m pip install -r requirements.txt
-python -m pip install .
+python -m venv .venv
 ```
 
-For development:
+Activate the virtual environment.
+
+macOS / Linux:
+```shell
+source .venv/bin/activate
+```
+
+Windows PowerShell:
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Windows Command Prompt:
+```bat
+.\.venv\Scripts\activate.bat
+```
+
+Install GitPy and its dependencies in the active environment:
+```shell
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install -e .
+```
+
+GitPy is a Python library, not a standalone application. With the virtual
+environment active and credentials configured, put your GitPy code in a
+Python file (for example, `example.py`) and run it with:
 
 ```shell
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
+python example.py
+```
+
+## Running tests
+
+Run the test suite with pytest:
+```shell
+python -m pytest
+```
+
+Alternatively, run the standard-library unittest suite:
+```shell
 python -m unittest discover
+```
+
+To collect coverage:
+```shell
+coverage run -m unittest discover
 ```
 
 ## Getting started
