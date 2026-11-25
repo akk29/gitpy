@@ -21,7 +21,7 @@ coverage html -d coverage_html
 
 # Support & Contribution
 
-If you are facing issues related to bugs, code [documentation]((https://github.com/akk29/gitpy/wiki)), development setup or any other general issue.
+If you are facing issues related to bugs, code [documentation](README.md), development setup or any other general issue.
 Feel free to open an issue to reproduce the bug by providing sample code with proper label.   
 
 Contributions are always welcome. You can do any of these following:

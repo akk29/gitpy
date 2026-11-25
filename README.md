@@ -1,141 +1,246 @@
 # GitPy
 
-Python Interface to GitHub's developer API
+Python interface to the GitHub REST API.
 
 [![Python](https://img.shields.io/badge/Python-3.13.3-blue.svg?style=flat-square)](https://www.python.org/downloads/release/python-3133/)
 [![License](https://img.shields.io/badge/license-MIT%20License-green.svg)](https://opensource.org/licenses/MIT)
 [![Maintainability](https://qlty.sh/gh/akk29/projects/gitpy/maintainability.png)](https://qlty.sh/gh/akk29/projects/gitpy)
 [![Coverage](https://codecov.io/gh/akk29/gitpy/graph/badge.svg?token=nDeQuSURqF)](https://codecov.io/gh/akk29/gitpy)
 
-
-A lightweight, response-based Python SDK designed to streamline interactions with the GitHub Developer API.
+GitPy is a lightweight, response-based client that handles GitHub API endpoints
+and returns `requests.Response` objects for application-specific logic.
 
 ## Installation
 
 ```shell
 git clone https://github.com/akk29/gitpy.git
 cd gitpy
-python setup.py install
+python -m pip install -r requirements.txt
+python -m pip install .
 ```
 
-## Features
+For development:
 
-* GitPy provide response based object for the GitHub Developer's API with the help of methods.
+```shell
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m unittest discover
+```
 
-* Response based approach helps other Developers to write their own logic after performing the action.
+## Getting started
 
-* To write your own application interacting with GitHub API you need to store the end-point urls & mock them using request library. GitPy takes care it for you.
+GitPy requires a GitHub username and a Personal Access Token. Configure them
+through environment variables; never commit credentials to source control.
 
+```shell
+export GITHUB_USERNAME="your-github-username"
+export GITHUB_TOKEN="github_pat_your_token"
+```
 
-## Documentation
+On Windows PowerShell:
 
+```powershell
+$env:GITHUB_USERNAME = "your-github-username"
+$env:GITHUB_TOKEN = "github_pat_your_token"
+```
 
-### Getting Started
+Use only the Personal Access Token scopes required by the operations you run.
+Private repository operations normally require `repo` scope for a classic
+token. Fine-grained tokens should be limited to the necessary repositories
+and permissions.
 
-GitPy requires your GitHub username and a Personal Access Token (PAT). Securely obtain a token with the appropriate scopes by following the [GitHub Personal Access Token Guide](https://github.com).
-
----
-
-### Technical Architecture & Core Usage
-
-#### 1. Robust Authentication & Error Handling
-Always secure your credentials using environment variables or a `.env` file rather than hardcoding credentials into your execution script.
+## Authentication
 
 ```python
 import os
+
 from gitpy.core.auth import GitPy
-from gitpy.exceptions import (
-    UnauthorizedError, 
-    ForbiddenError, 
-    ValidationError, 
-    ResourceNotFoundError
+
+github = GitPy(
+    username=os.environ["GITHUB_USERNAME"],
+    token=os.environ["GITHUB_TOKEN"],
 )
 
-def initialize_client():
-    """Initializes the GitPy client using secure environment variables."""
-    username = os.getenv("GITHUB_USERNAME", "default_user")
-    token = os.getenv("GITHUB_TOKEN")
-    
-    if not token:
-        raise ValueError("Critical Error: GITHUB_TOKEN environment variable is not set.")
-        
-    return GitPy(username, token)
-
-def run_authentication_check():
-    client = initialize_client()
-    try:
-        result = client.authenticate()
-        print(f"Authentication Successful: {result.json()}")            
-    except UnauthorizedError:
-        print("Error 401: Unauthorized access. Please verify your token credentials.")
-    except ForbiddenError:
-        print("Error 403: Forbidden. Rate limit exceeded or insufficient scopes.")
-    except ResourceNotFoundError:
-        print("Error 404: Resource not found.")
-    except ValidationError:
-        print("Error 422: Validation failed.")
-    except Exception as err:
-        print(f"An unexpected networking error occurred: {err}")
-
-if __name__ == '__main__':
-    run_authentication_check()
+response = github.authenticate()
+print(response.status_code)
+print(response.json()["login"])
 ```
 
-#### 2. Repository Operations
-The `Repository` class abstractly handles creating, deleting, and listing your remote targets.
+`authenticate()` sends `GET /user` and stores the authenticated user's JSON
+details in `github.user_details`.
+
+### Authentication error handling
+
+```python
+from gitpy.exceptions import (
+    ForbiddenError,
+    ResourceNotFoundError,
+    UnauthorizedError,
+    ValidationError,
+)
+
+try:
+    github.authenticate()
+except UnauthorizedError:
+    print("The token is missing or invalid.")
+except ForbiddenError:
+    print("Access is forbidden or the token lacks required scopes.")
+except ResourceNotFoundError:
+    print("The requested GitHub resource was not found.")
+except ValidationError:
+    print("GitHub rejected the request payload.")
+```
+
+## Repository operations
+
+Create a repository manager from an authenticated `GitPy` instance:
 
 ```python
 from gitpy.core.repos import Repository
-# Assumes client initialization logic from the authentication block above
-client = initialize_client()
-repo_manager = Repository(client)
 
-# Create Public and Private Repositories
-pub_repo = repo_manager.create_public_repository('my-public-repo')
-priv_repo = repo_manager.create_private_repository('my-private-repo')
-
-# Direct boolean routing: (repo_name, is_private)
-custom_repo = repo_manager.create_repository('custom-repo', is_private=True)
-
-# List all accessible repositories
-repo_list_response = repo_manager.list_repositories()
-if repo_list_response.status_code == 200:
-    print(repo_list_response.json())
-
-# Delete a target repository
-delete_response = repo_manager.delete_repository('my-public-repo')
-# Status mappings: 204 = Success, 401 = Not Allowed, 404 = Not Found
-print(f"Deletion status: {delete_response.status_code}") 
+github.authenticate()
+repositories = Repository(github)
 ```
 
-#### 3. File System & Content Management
-Before performing CRUD operations on individual files, you must explicitly bind your manager to a designated target project via `.select_repository()`.
+### Create repositories
 
 ```python
-import json
-from gitpy.core.repos import Repository
+public_response = repositories.create_public_repository("public-example")
+private_response = repositories.create_private_repository("private-example")
 
-client = initialize_client()
-file_manager = Repository(client)
-file_manager.select_repository("target-project-name")
-
-# Create a File
-res_create = file_manager.create_file('main.py', 'import os', 'initial commit message')
-if res_create.status_code == 201:
-    print("File provisioned successfully.")
-
-# Read File Metadata/Details
-res_get = file_manager.get_file('notes/main.py')
-if res_get.status_code == 200:
-    print(json.dumps(res_get.json(), indent=2))
-
-# Update File Content
-res_update = file_manager.update_file('main.py', 'import os\nprint("Hello World")', 'updated execution logic')
-
-# Rename/Move File
-res_rename = file_manager.rename_file('main.py', 'app.py')
-
-# Delete File
-res_delete = file_manager.delete_file('app.py', 'purged legacy scripts')
+# Explicit form: create_repository(name, is_private)
+other_response = repositories.create_repository("other-example", is_private=True)
 ```
----
+
+Successful creation usually returns HTTP `201`. It also selects the newly
+created repository as the current repository.
+
+### List repositories
+
+```python
+response = repositories.list_repositories()
+
+if response.status_code == 200:
+    for repository in response.json():
+        print(repository["full_name"], repository["private"])
+```
+
+### Delete a repository
+
+```python
+response = repositories.delete_repository("public-example")
+
+if response.status_code == 204:
+    print("Repository deleted.")
+```
+
+Repository deletion is permanent.
+
+## File operations
+
+Select the repository before accessing repository files:
+
+```python
+repositories.select_repository("example-project")
+```
+
+```python
+# Create a file
+response = repositories.create_file(
+    "src/main.py",
+    'print("Hello")\n',
+    "Add main program",
+)
+
+# Get file details
+response = repositories.get_file("src/main.py")
+
+# Update a file
+response = repositories.update_file(
+    "src/main.py",
+    'print("Hello, GitHub")\n',
+    "Update main program",
+)
+
+# Rename a file
+response = repositories.rename_file("src/main.py", "src/app.py")
+
+# Delete a file
+response = repositories.delete_file(
+    "src/app.py",
+    "Remove obsolete application file",
+)
+```
+
+GitPy encodes text file content as base64 automatically. GitHub's API has no
+dedicated rename operation, so `rename_file()` creates the destination and
+deletes the source. Both operations create separate commits.
+
+## API reference
+
+### `GitPy(username=None, token=None)`
+
+The authenticated client.
+
+Attributes:
+
+- `username`: GitHub username
+- `token`: Personal Access Token
+- `network_service`: HTTP session and request handler
+- `user_details`: authenticated user JSON after `authenticate()`
+
+Methods:
+
+- `authenticate()`: sends `GET /user` and returns `requests.Response`
+
+### `Repository(authenticated_obj)`
+
+The repository and file operations manager. It requires a `GitPy` instance.
+
+| Method | HTTP operation | Result |
+| --- | --- | --- |
+| `list_repositories()` | `GET /user/repos` | `requests.Response` |
+| `create_repository(repo_name, access)` | `POST /user/repos` | `requests.Response` |
+| `create_public_repository(repo_name)` | Creates a public repository | `requests.Response` |
+| `create_private_repository(repo_name)` | Creates a private repository | `requests.Response` |
+| `delete_repository(repo_name)` | `DELETE /repos/{username}/{repo_name}` | `requests.Response` |
+| `select_repository(repo_name)` | Sets the current repository | `None` |
+| `create_file(abs_path, content, msg)` | `PUT /repos/{owner}/{repo}/contents/{path}` | `requests.Response` |
+| `get_file(abs_path)` | `GET /repos/{owner}/{repo}/contents/{path}` | `requests.Response` |
+| `update_file(abs_path, content, msg)` | Gets the SHA, then updates file contents | `requests.Response` or `None` |
+| `rename_file(current, new)` | Creates the destination, then deletes the source | `None` |
+| `delete_file(abs_path, msg)` | Gets the SHA, then deletes file contents | `requests.Response` or `None` |
+
+## Exceptions
+
+GitPy raises exceptions for HTTP error responses:
+
+| HTTP status | Exception | Meaning |
+| --- | --- | --- |
+| 401 | `UnauthorizedError` | Token is missing or invalid |
+| 403 | `ForbiddenError` | Access denied or insufficient scope |
+| 404 | `ResourceNotFoundError` | Repository or file was not found |
+| 409 | `ConflictError` | Resource state conflicts with the request |
+| 422 | `ValidationError` | GitHub rejected or could not validate the request |
+| 503 | `ServiceUnavailableError` | GitHub service is unavailable |
+
+Exception instances expose `response` and `code`:
+
+```python
+from gitpy.exceptions import ForbiddenError
+
+try:
+    repositories.list_repositories()
+except ForbiddenError as error:
+    print(error.code)
+    print(error.response)
+```
+
+Request transport failures raise `RequestLibraryError`. The HTTP and transport
+exception classes are in `gitpy.exceptions`.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and contribution
+guidelines.
