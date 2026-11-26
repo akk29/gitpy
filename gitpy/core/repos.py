@@ -8,14 +8,14 @@ class Repository:
 
     def __init__(self, authenticated_obj):
         self.gitpy_obj = authenticated_obj
-        self.network_service = self.gitpy_obj.network_service
+        self.client = self.gitpy_obj.client
         self._current_repository = None
         self._current_branch = None
 
     def list_repositories(self):
         """https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-organization-repositories"""
         url = generate_url(REPOSITORY_URLS.LIST_REPOS,{})
-        return self.network_service.get(url)
+        return self.client.get(url)
 
     def __create_post_data(self, repo_name, access=None):
         repo_meta_data = {
@@ -34,7 +34,7 @@ class Repository:
         """https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-an-organization-repository"""
         payload = self.__create_post_data(repo_name, access)
         url = generate_url(REPOSITORY_URLS.CREATE_REPO,{})
-        response = self.network_service.post(url, payload)
+        response = self.client.post(url, payload)
         self.select_repository(repo_name)
         return response
 
@@ -48,7 +48,7 @@ class Repository:
         '''https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#delete-a-repository'''
         params = {F.USERNAME: self.gitpy_obj.username, F.REPO_NAME: repo_name}
         url = generate_url(REPOSITORY_URLS.REPO_URL,params)
-        return self.network_service.delete(url,None)
+        return self.client.delete(url,None)
     
     def select_repository(self,repo_name):
         self._current_repository = repo_name
@@ -65,13 +65,13 @@ class Repository:
             },
             F.CONTENT : base64.b64encode(bytes(content,F.UTF8)).decode(F.UTF8)
         }
-        return self.network_service.update(url,payload)
+        return self.client.update(url,payload)
 
     def get_file(self,abs_path):
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-repository-content'''
         params = {F.OWNER: self.gitpy_obj.username, F.REPO : self._current_repository, F.PATH : abs_path}
         url = generate_url(REPOSITORY_URLS.GET_FILE,params)
-        return self.network_service.get(url)
+        return self.client.get(url)
 
     def update_file(self,abs_path,content,msg):
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents'''
@@ -89,7 +89,7 @@ class Repository:
             }
             params = {F.OWNER: self.gitpy_obj.username, F.REPO : self._current_repository, F.PATH : abs_path}
             url = generate_url(REPOSITORY_URLS.UDPATE_FILE,params)
-            return self.network_service.update(url,payload)
+            return self.client.update(url,payload)
 
     def delete_file(self,abs_path,msg):
         '''https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#delete-a-file'''
@@ -106,7 +106,7 @@ class Repository:
             }
             params = {F.OWNER : self.gitpy_obj.username, F.REPO : self._current_repository, F.PATH : abs_path}
             url = generate_url(REPOSITORY_URLS.DELETE_FILE,params)
-            return self.network_service.delete(url,payload)
+            return self.client.delete(url,payload)
 
     def rename_file(self,current,_new):
         ''' WARNING: GitHub REST API doesn't support rename file operation

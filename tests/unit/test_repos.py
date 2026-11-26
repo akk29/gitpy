@@ -10,7 +10,7 @@ class TestRepository(unittest.TestCase):
 
     def setUp(self):
         self.gitpyObj = GitPy("correctusername", "correcttoken")
-        self.gitpyObj.network_service = self.gitpyObj.network_service
+        self.gitpyObj.client = self.gitpyObj.client
         self.gitpyObj.user_details = {
             "email" : F.DEFAULT_EMAIL
         }

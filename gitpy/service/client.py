@@ -3,7 +3,7 @@ from requests.status_codes import codes
 from gitpy.service.loggerService import Logger
 from gitpy.exceptions import RequestLibraryWarning, RequestLibraryError, error_handler
 
-class NetworkService:
+class Client:
 
     def __init__(self, headers=None):
         self.session = requests.Session()
