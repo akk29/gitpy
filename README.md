@@ -148,8 +148,8 @@ repositories = Repository(github)
 public_response = repositories.create_public_repository("public-example")
 private_response = repositories.create_private_repository("private-example")
 
-# Explicit form: create_repository(name, is_private)
-other_response = repositories.create_repository("other-example", is_private=True)
+# Explicit form: create_repository(name, access)
+other_response = repositories.create_repository("other-example", access=True)
 ```
 
 Successful creation usually returns HTTP `201`. It also selects the newly
@@ -278,6 +278,10 @@ except ForbiddenError as error:
 
 Request transport failures raise `RequestLibraryError`. The HTTP and transport
 exception classes are in `gitpy.exceptions`.
+
+## License
+
+GitPy is distributed under the [MIT License](LICENSE).
 
 ## Contributing
 
