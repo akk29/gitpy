@@ -3,11 +3,10 @@
 name: Python application
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
   workflow_dispatch:
-    branches: [ "master" ]
 permissions:
   contents: read
 jobs:
@@ -15,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: SET UP PYTHON 3.13.3
-      uses: actions/setup-python@v3
+    - name: SET UP PYTHON 3.13
+      uses: actions/setup-python@v5
       with:
-        python-version: "3.13.3"
+        python-version: "3.13"
     - name: INSTALL DEPENDENCIES
       run: |
         python -m pip install --upgrade pip
